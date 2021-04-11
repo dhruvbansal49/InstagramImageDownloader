@@ -1,6 +1,4 @@
 const pup = require("puppeteer");
-const fs = require("fs");
-const path = require("path");
 
 // Please use fake id as there is chances of blocking of you personal id
 // Use those username whose profile is public
