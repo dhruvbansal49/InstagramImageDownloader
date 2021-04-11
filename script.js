@@ -1,12 +1,19 @@
 const pup = require("puppeteer");
 const fs = require("fs");
 const path = require("path");
+
+// Please use fake id as there is chances of blocking of you personal id
+// Use those username whose profile is public
+
 let id = ""; // Your instagram id
 let user = ""; // Your instagram username
 let pass = ""; // Your instagram password
+let pathToDownloadFolder='C:/Users/bansa/Downloads'; //path of download folder in yor PC(edit it)
+let chromePath='C:/Program Files/Google/Chrome/Application/chrome'; // path of chrome in your PC(edit it)
 let tab;
 let usernameOfDownload = process.argv[2];
 let no_of_images=1;
+
 console.log(typeof(usernameOfDownload));
 async function wait(ms){
     await new Promise(function(resolve,reject){
@@ -17,7 +24,6 @@ async function wait(ms){
 }
 async function main(){
     const browser = await pup.launch({
-        // executablePath: 'C:/Program Files/Google/Chrome/Application/chrome',
         headless:false,
         defaultViewport:false,
         args:["--start-maximized"],
@@ -27,16 +33,13 @@ async function main(){
     await tab.goto("https://www.instagram.com/accounts/login/");
 
     await tab.waitForSelector("input[name='username']",{visible:true});
-    await tab.type("input[name='username']",id);
+    await tab.type("input[name='username']",user);
     await wait(1000);
     await tab.type("input[name='password']",pass);
     await wait(1000);
 
     await tab.waitForSelector("button[type='submit']",{visible:true});
     await tab.click("button[type='submit']");
-
-    
-    // await tab.goto("https://www.instagram.com/codechef_mace_chapter/");
     
     await tab.waitForSelector("input[placeholder='Search']",{visible:true});
     
@@ -46,7 +49,6 @@ async function main(){
     await tab.keyboard.press('Enter');
     await tab.waitForSelector(".v1Nh3.kIKUG._bz0w a",{visible:true});
     let postUrlInComp = await tab.$$(".v1Nh3.kIKUG._bz0w a");
-    // console.log(postUrlInComp.length); 
     let allUrlPromises=[];
     for(let i of postUrlInComp){
         let url = tab.evaluate(function(ele){
@@ -59,8 +61,6 @@ async function main(){
         await downloadImage("https://www.instagram.com/"+postUrls[i]);
     }    
     await browser.close();  
-    // await downloadVideo("https://instagram.fdel24-1.fna.fbcdn.net/v/t50.2886-16/170539457_471673160551363_4441918905206426733_n.mp4?_nc_ht=instagram.fdel24-1.fna.fbcdn.net&_nc_cat=107&_nc_ohc=2ftahHUHSisAX_Ycgjh&edm=APU89FAAAAAA&ccb=7-4&oe=6074D7A1&oh=a30982a29fcddbd08ddf6ccf460452e5&_nc_sid=86f79a")
-
 }
 async function downloadImage(url){
     await tab.goto(url);
@@ -78,7 +78,7 @@ async function downloadImage(url){
                 return confirm("Want to download this Image then press 'Ok'");
             })
             if(data){
-                await actualImage.screenshot({path:`C:/Users/bansa/Downloads/downloadedImage${no_of_images}.png`});
+                await actualImage.screenshot({path:`${pathToDownloadFolder}/downloadedImage${no_of_images}.png`});
                 no_of_images++;
             }
         }else{
@@ -152,7 +152,7 @@ async function downloadImage(url){
                 return confirm("Want to download this Image then press 'Ok'");
             })
             if(data){
-                await actualImage.screenshot({path:`C:/Users/bansa/Downloads/downloadedImage${no_of_images}.png`});
+                await actualImage.screenshot({path:`${pathToDownloadFolder}/downloadedImage${no_of_images}.png`});
                 no_of_images++;
             }
         }
@@ -163,7 +163,7 @@ async function downloadImage(url){
 }
 async function downloadVideo(videoUrl){
     const brow = await pup.launch({
-        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome',
+        executablePath: chromePath,
         headless:false,
         defaultViewport:false,
         args:["--start-maximized"],
